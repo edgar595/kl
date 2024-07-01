@@ -1,9 +1,7 @@
 import dash
-from dash import html, dcc, callback, Input, Output, State
-import dash_bootstrap_components as dbc
+from dash import html, dcc, Input, Output, State
 import re
 import PyPDF2
-from natsort import natsorted
 
 # Function to extract text from PDF starting from a specific page
 def extract_text_from_pdf(pdf_path, start_page=11):
@@ -76,35 +74,36 @@ def find_provision_in_constitution(constitution_text, provision_text):
 
     return results
 
-app = dash.Dash(__name__, external_stylesheets=[dbc.themes.BOOTSTRAP])
+app = dash.Dash(__name__)
 
 image_style = {
     "height": "200px",
     "width": "100%",
-    "object-fit": "cover"
+    "object-fit": "cover",
+    "border-radius": "10px"
 }
 
-app.layout = dbc.Container([
-    html.Div("📚 Kenyan Law", className="text-center text-danger fs-2 mt-4"),
-    html.H1("Welcome to Analyze the Constitution", className="text-center mb-4"),
-    dbc.Input(id="provision-input", placeholder="Enter a provision to search for...", className="mb-2"),
-    dbc.Button("Analyze", id="analyze-button", color="danger", className="mb-4"),
-    html.Div(id="results-output", className="mb-4"),
-    dbc.Row([
-        dbc.Col([
-            html.Img(src="/assets/Constitution.jpg", className="img-fluid rounded", style=image_style),
-            html.P("Analyze Constitutional Articles", className="text-center mt-2")
-        ], width=4),
-        dbc.Col([
-            html.Img(src="/assets/hammer.jpg", className="img-fluid rounded", style=image_style),
-            html.P("Interpret Legal Provisions", className="text-center mt-2")
-        ], width=4),
-        dbc.Col([
-            html.Img(src="/assets/logo.jpg", className="img-fluid rounded", style=image_style),
-            html.P("Explore Legal Precedents", className="text-center mt-2")
-        ], width=4)
-    ])
-], fluid=True, className="bg-light p-5 rounded")
+app.layout = html.Div([
+    html.Div("📚 Kenyan Law", style={"text-align": "center", "color": "red", "font-size": "24px", "margin-top": "20px"}),
+    html.H1("Welcome to Analyze the Constitution", style={"text-align": "center", "margin-bottom": "20px"}),
+    dcc.Input(id="provision-input", placeholder="Enter a provision to search for...", style={"margin-bottom": "10px", "width": "100%", "padding": "10px"}),
+    html.Button("Analyze", id="analyze-button", style={"background-color": "red", "color": "white", "padding": "10px 20px", "border": "none", "border-radius": "5px", "margin-bottom": "20px"}),
+    html.Div(id="results-output", style={"margin-bottom": "20px"}),
+    html.Div([
+        html.Div([
+            html.Img(src="/assets/Constitution.jpg", style=image_style),
+            html.P("Analyze Constitutional Articles", style={"text-align": "center", "margin-top": "10px"})
+        ], style={"flex": "1", "padding": "10px"}),
+        html.Div([
+            html.Img(src="/assets/hammer.jpg", style=image_style),
+            html.P("Interpret Legal Provisions", style={"text-align": "center", "margin-top": "10px"})
+        ], style={"flex": "1", "padding": "10px"}),
+        html.Div([
+            html.Img(src="/assets/logo.jpg", style=image_style),
+            html.P("Explore Legal Precedents", style={"text-align": "center", "margin-top": "10px"})
+        ], style={"flex": "1", "padding": "10px"})
+    ], style={"display": "flex", "justify-content": "space-between"})
+], style={"background-color": "lightgray", "padding": "40px", "border-radius": "10px"})
 
 @app.callback(
     Output("results-output", "children"),
@@ -125,7 +124,7 @@ def analyze_provision(n_clicks, provision_text):
                 html.H4(f"CHAPTER {result['chapter']} – {result['title']}"),
                 html.P(f"Article {result['article']}"),
                 html.P(result['content'])
-            ], className="mb-3"))
+            ], style={"margin-bottom": "20px"}))
         return output
     else:
         return "Provision not found in the Constitution."
